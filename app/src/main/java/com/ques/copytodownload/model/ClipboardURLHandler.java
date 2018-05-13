@@ -1,9 +1,8 @@
 package com.ques.copytodownload.model;
 
-import android.util.Log;
+import android.content.Context;
 
 import com.ques.copytodownload.model.instagram.InstagramService;
-import com.ques.copytodownload.model.instagram.OEmbed;
 
 import retrofit2.Call;
 import retrofit2.Callback;
@@ -31,7 +30,7 @@ public class ClipboardURLHandler {
         throw new AssertionError("You MUST NOT create the instance of this class!!");
     }
 
-    public static void downloadInstagramImage(String url) {
+    public static void downloadInstagramImage(final Context context, String url) {
         Call<OEmbed> call = sInstagramService.loadOEmbed(url);
         call.enqueue(new Callback<OEmbed>() {
             @Override
@@ -40,8 +39,8 @@ public class ClipboardURLHandler {
                 if (oEmbed == null) {
                     return;
                 }
-                Log.i(TAG, oEmbed.thumbnail_url);
-                new ImageDownloader().execute(oEmbed.thumbnail_url);
+                // TODO: Check content type(image/video)
+                new ImageDownloader(context, oEmbed).execute();
             }
 
             @Override

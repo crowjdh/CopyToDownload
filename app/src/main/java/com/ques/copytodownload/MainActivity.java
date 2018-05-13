@@ -7,9 +7,9 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.widget.Toast;
 
-import com.ques.copytodownload.model.ClipboardURLHandler;
+import com.ques.copytodownload.services.ClipboardMonitorService;
+import com.ques.copytodownload.utils.Logger;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -26,8 +26,12 @@ public class MainActivity extends AppCompatActivity {
     protected void onResume() {
         super.onResume();
 
+        startClipboardMonitorServiceIfPossible();
+    }
+
+    private void startClipboardMonitorServiceIfPossible() {
         if (isPermissionGranted(PERMISSION_WRITE)) {
-            ClipboardURLHandler.downloadInstagramImage("https://www.instagram.com/p/Bis75J2nvTI");
+            ClipboardMonitorService.start(getApplicationContext());
         } else {
             requestWritePermission();
         }
@@ -35,7 +39,7 @@ public class MainActivity extends AppCompatActivity {
 
     private void requestWritePermission() {
         if (ActivityCompat.shouldShowRequestPermissionRationale(this, PERMISSION_WRITE)) {
-            Toast.makeText(this, "Placeholder", Toast.LENGTH_LONG).show();
+            Logger.showLongToast(this, "Placeholder");
         } else {
             ActivityCompat.requestPermissions(this,
                     new String[]{ PERMISSION_WRITE },
@@ -55,9 +59,9 @@ public class MainActivity extends AppCompatActivity {
         switch (requestCode) {
             case RC_PERMISSIONS_WRITE_EXTERNAL_STORAGE: {
                 if (isPermissionGranted(grantResults)) {
-                    ClipboardURLHandler.downloadInstagramImage("https://www.instagram.com/p/Bis75J2nvTI");
+                    startClipboardMonitorServiceIfPossible();
                 } else {
-                    Toast.makeText(this, "This app requires this permission.", Toast.LENGTH_LONG).show();
+                    Logger.showLongToast(this, "This app requires this permission.");
                 }
             }
         }
