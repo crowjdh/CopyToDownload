@@ -17,15 +17,11 @@ import java.lang.ref.WeakReference;
 import java.net.URL;
 import java.net.URLConnection;
 
-/**
- * Created by jeong on 13/05/2018.
- */
-
-public class ImageDownloader extends AsyncTask<Void, Void, File> {
+public class OEmbedImageDownloader extends AsyncTask<Void, Void, File> {
     private WeakReference<Context> mContext;
     private OEmbed mOEmbed;
 
-    ImageDownloader(Context context, OEmbed oEmbed) {
+    OEmbedImageDownloader(Context context, OEmbed oEmbed) {
         mContext = new WeakReference<>(context);
         mOEmbed = oEmbed;
     }

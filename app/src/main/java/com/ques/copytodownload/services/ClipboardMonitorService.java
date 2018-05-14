@@ -11,13 +11,8 @@ import android.support.annotation.Nullable;
 import com.ques.copytodownload.model.ClipboardURLHandler;
 import com.ques.copytodownload.utils.Logger;
 
-/**
- * Created by jeong on 13/05/2018.
- */
-
 public class ClipboardMonitorService extends Service
         implements ClipboardManager.OnPrimaryClipChangedListener {
-    private static final String TAG = ClipboardMonitorService.class.getSimpleName();
     private ClipboardManager mClipboardManager;
 
     @Override

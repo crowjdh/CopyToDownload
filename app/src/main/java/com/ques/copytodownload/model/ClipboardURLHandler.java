@@ -1,6 +1,7 @@
 package com.ques.copytodownload.model;
 
 import android.content.Context;
+import android.support.annotation.NonNull;
 
 import com.ques.copytodownload.model.apis.InstagramApi;
 import com.ques.copytodownload.utils.Logger;
@@ -15,10 +16,11 @@ import retrofit2.converter.gson.GsonConverterFactory;
 
 /**
  * Created by jeong on 13/05/2018.
+ *
+ * Utility class for handling copied text from clipboard.
  */
 
 public class ClipboardURLHandler {
-    private static final String TAG = ClipboardURLHandler.class.getSimpleName();
     private static final InstagramApi INSTAGRAM_API;
 
     static {
@@ -34,7 +36,7 @@ public class ClipboardURLHandler {
     }
 
     public static void tryToDownloadMedia(Context context, String text) {
-        ApiType type = ServiceIdentifier.getApiType(context, text);
+        ApiType type = ServiceIdentifier.getApiType(text);
         if (type == null) {
             Logger.dOrLongToast(context, "No matching api. Skipping download.");
             return;
@@ -50,18 +52,18 @@ public class ClipboardURLHandler {
         Call<OEmbed> call = INSTAGRAM_API.loadOEmbed(url);
         call.enqueue(new Callback<OEmbed>() {
             @Override
-            public void onResponse(Call<OEmbed> call, Response<OEmbed> response) {
+            public void onResponse(@NonNull Call<OEmbed> call, @NonNull Response<OEmbed> response) {
                 OEmbed oEmbed = response.body();
                 if (oEmbed == null) {
                     return;
                 }
                 // TODO: Check content type(image/video)
-                new ImageDownloader(context, oEmbed).execute();
+                new OEmbedImageDownloader(context, oEmbed).execute();
             }
 
             @Override
-            public void onFailure(Call<OEmbed> call, Throwable t) {
-
+            public void onFailure(@NonNull Call<OEmbed> call, @NonNull Throwable t) {
+                Logger.dOrLongToast(context, "Failed to convert instagram url to OEmbed.");
             }
         });
     }

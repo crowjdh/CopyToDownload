@@ -4,13 +4,13 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
-/**
- * Created by jeong on 13/05/2018.
- */
+import java.util.Objects;
 
 public class BootCompleteListener extends BroadcastReceiver {
     @Override
     public void onReceive(Context context, Intent intent) {
-        ClipboardMonitorService.start(context);
+        if (Objects.equals(intent.getAction(), Intent.ACTION_BOOT_COMPLETED)) {
+            ClipboardMonitorService.start(context);
+        }
     }
 }

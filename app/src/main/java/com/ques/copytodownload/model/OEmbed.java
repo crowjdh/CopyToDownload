@@ -2,8 +2,12 @@ package com.ques.copytodownload.model;
 
 /**
  * Created by jeong on 13/05/2018.
+ *
+ * Class representing OEmbed.
+ * @see <a href="https://oembed.com">https://oembed.com</>
  */
 
+@SuppressWarnings("WeakerAccess")
 public class OEmbed {
     public String title;
     public String author_name;

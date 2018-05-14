@@ -1,14 +1,9 @@
 package com.ques.copytodownload.utils;
 
-import android.content.Context;
 import android.support.annotation.Nullable;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-/**
- * Created by jeong on 14/05/2018.
- */
 
 public class ServiceIdentifier {
     public enum ApiType {
@@ -37,7 +32,7 @@ public class ServiceIdentifier {
     }
 
     @Nullable
-    public static ApiType getApiType(@Nullable Context context, String url) {
+    public static ApiType getApiType(String url) {
         Pattern p = Pattern.compile("^(?:https?:)?(?://)?(?:[^@\\n]+@)?(?:www\\.)?([^:/\\n]+)");
         Matcher m = p.matcher(url);
         if (!m.find()) {

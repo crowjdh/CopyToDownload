@@ -5,10 +5,7 @@ import android.support.annotation.Nullable;
 import android.util.Log;
 import android.widget.Toast;
 
-/**
- * Created by jeong on 13/05/2018.
- */
-
+@SuppressWarnings("unused")
 public class Logger {
     private static final String TAG = Logger.class.getSimpleName();
 

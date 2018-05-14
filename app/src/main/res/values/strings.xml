@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name">CopyToDownload</string>
+    <string name="placeholder">Placeholder</string>
 </resources>
