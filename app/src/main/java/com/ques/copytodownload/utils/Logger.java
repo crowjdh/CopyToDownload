@@ -24,9 +24,25 @@ public class Logger {
         iOrToast(context, message, Toast.LENGTH_LONG);
     }
 
+    public static void dOrShortToast(@Nullable Context context, String message) {
+        dOrToast(context, message, Toast.LENGTH_SHORT);
+    }
+
+    public static void dOrLongToast(@Nullable Context context, String message) {
+        dOrToast(context, message, Toast.LENGTH_LONG);
+    }
+
     private static void iOrToast(@Nullable Context context, String message, int toastLength) {
         if (context == null) {
             i(message);
+        } else {
+            showToast(context, message, toastLength);
+        }
+    }
+
+    private static void dOrToast(@Nullable Context context, String message, int toastLength) {
+        if (context == null) {
+            d(message);
         } else {
             showToast(context, message, toastLength);
         }

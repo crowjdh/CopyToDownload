@@ -46,8 +46,9 @@ public class ClipboardMonitorService extends Service
     @Override
     public void onPrimaryClipChanged() {
         Logger.d("onPrimaryClipChanged:\n" + mClipboardManager.getPrimaryClip());
-        String instagramUrl = mClipboardManager.getPrimaryClip().getItemAt(0).getText().toString();
-        ClipboardURLHandler.downloadInstagramImage(getApplicationContext(), instagramUrl);
+
+        String copiedText = mClipboardManager.getPrimaryClip().getItemAt(0).getText().toString();
+        ClipboardURLHandler.tryToDownloadMedia(getApplicationContext(), copiedText);
     }
 
     @Nullable

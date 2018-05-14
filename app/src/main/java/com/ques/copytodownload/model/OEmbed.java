@@ -13,6 +13,10 @@ public class OEmbed {
 
     @Override
     public String toString() {
-        return String.format("%s@%s - %s\n\nURL: %s", author_name, provider_name, title, thumbnail_url);
+        return String.format("%s\n\nURL: %s", toSimpleString(), thumbnail_url);
+    }
+
+    public String toSimpleString() {
+        return String.format("%s@%s - %s", author_name, provider_name, title);
     }
 }

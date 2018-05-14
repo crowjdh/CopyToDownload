@@ -49,7 +49,7 @@ public class ImageDownloader extends AsyncTask<Void, Void, File> {
         }
 
         if (file != null) {
-            Logger.iOrLongToast(mContext.get(), "Image downloaded: \n" + mOEmbed.toString());
+            Logger.iOrLongToast(mContext.get(), "Image downloaded: \n" + mOEmbed.toSimpleString());
         } else {
             showFailureToast(context, mOEmbed);
         }
