@@ -1,4 +1,7 @@
 <resources>
     <string name="app_name">CopyToDownload</string>
     <string name="placeholder">Placeholder</string>
+
+    <string name="com.twitter.sdk.android.CONSUMER_KEY">BydQ3W5QckSmLirp5X8FvnjT2</string>
+    <string name="com.twitter.sdk.android.CONSUMER_SECRET">4c8ZD1xgmUdFhQxvRscccgcdRotSPMsaIxMrCgnRaLLwUPM3Ik</string>
 </resources>

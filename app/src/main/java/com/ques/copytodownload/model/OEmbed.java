@@ -7,8 +7,8 @@ package com.ques.copytodownload.model;
  * @see <a href="https://oembed.com">https://oembed.com</>
  */
 
-@SuppressWarnings("WeakerAccess")
-public class OEmbed {
+@SuppressWarnings({"WeakerAccess", "unused"})
+public class OEmbed extends Downloadable {
     public String title;
     public String author_name;
     public String provider_name;
@@ -22,5 +22,25 @@ public class OEmbed {
 
     public String toSimpleString() {
         return String.format("%s@%s - %s", author_name, provider_name, title);
+    }
+
+    @Override
+    public String getDownloadTitle() {
+        return author_name + " - " + title;
+    }
+
+    @Override
+    public String getId() {
+        return media_id;
+    }
+
+    @Override
+    public String getMediaUrl() {
+        return thumbnail_url;
+    }
+
+    @Override
+    public DownloadPolicy getPolicy() {
+        return new DownloadPolicy.Builder().setAllowOverMetered(true).build();
     }
 }

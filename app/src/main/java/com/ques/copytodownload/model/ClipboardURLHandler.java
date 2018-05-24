@@ -1,15 +1,20 @@
 package com.ques.copytodownload.model;
 
+import android.accounts.NetworkErrorException;
 import android.content.Context;
-import android.support.annotation.NonNull;
 
 import com.ques.copytodownload.model.apis.InstagramApi;
+import com.ques.copytodownload.model.apis.TwitterApi;
+import com.ques.copytodownload.utils.DownloadUtils;
 import com.ques.copytodownload.utils.Logger;
 import com.ques.copytodownload.utils.ServiceIdentifier;
 import com.ques.copytodownload.utils.ServiceIdentifier.ApiType;
+import com.twitter.sdk.android.core.models.Tweet;
+
+import java.io.IOException;
+import java.util.concurrent.CompletableFuture;
 
 import retrofit2.Call;
-import retrofit2.Callback;
 import retrofit2.Response;
 import retrofit2.Retrofit;
 import retrofit2.converter.gson.GsonConverterFactory;
@@ -35,36 +40,82 @@ public class ClipboardURLHandler {
         throw new AssertionError("You MUST NOT create the instance of this class!!");
     }
 
-    public static void tryToDownloadMedia(Context context, String text) {
-        ApiType type = ServiceIdentifier.getApiType(text);
+    public static void tryToDownloadMedia(Context context, String url) {
+        ApiType type = ServiceIdentifier.getApiType(url);
         if (type == null) {
             Logger.dOrLongToast(context, "No matching api. Skipping download.");
             return;
         }
-        switch (type) {
-            case Instagram:
-                ClipboardURLHandler.downloadInstagramImage(context, text);
-                break;
-        }
+
+        CompletableFuture<Downloadable> task = buildCreateUrlTask(context, url, type);
+        task = applyFailureHandler(context, task);
+        applyRequestDownload(context, task);
     }
 
-    private static void downloadInstagramImage(final Context context, String url) {
-        Call<OEmbed> call = INSTAGRAM_API.loadOEmbed(url);
-        call.enqueue(new Callback<OEmbed>() {
-            @Override
-            public void onResponse(@NonNull Call<OEmbed> call, @NonNull Response<OEmbed> response) {
-                OEmbed oEmbed = response.body();
-                if (oEmbed == null) {
-                    return;
-                }
-                // TODO: Check content type(image/video)
-                new OEmbedImageDownloader(context, oEmbed).execute();
-            }
+    private static CompletableFuture<Downloadable> buildCreateUrlTask(Context context, String url, ApiType type) {
+        CompletableFuture<Downloadable> task = null;
 
-            @Override
-            public void onFailure(@NonNull Call<OEmbed> call, @NonNull Throwable t) {
-                Logger.dOrLongToast(context, "Failed to convert instagram url to OEmbed.");
+        switch (type) {
+            case Instagram:
+                task = createUrlToInstagramModelTask(url);
+                break;
+            case Twitter:
+                task = createUrlToTwitterModelTask(context, url);
+                break;
+        }
+        return task;
+    }
+
+    private static CompletableFuture<Downloadable> applyFailureHandler(Context context, CompletableFuture<Downloadable> task) {
+        task = task.handle((downloadable, throwable) -> {
+            if (downloadable == null || throwable != null) {
+                Logger.dOrLongToast(context, "Failed to convert url.");
+
+                return null;
+            }
+            return downloadable;
+        });
+        return task;
+    }
+
+    private static void applyRequestDownload(Context context, CompletableFuture<Downloadable> task) {
+        task.thenAccept(downloadable -> {
+            try {
+                DownloadUtils.requestDownload(context, downloadable);
+            } catch (NetworkErrorException e) {
+                Logger.i(e.getMessage());
             }
         });
+    }
+
+    private static CompletableFuture<Downloadable> createUrlToInstagramModelTask(String url) {
+        return CompletableFuture.supplyAsync(() -> {
+            Call<OEmbed> call = INSTAGRAM_API.loadOEmbed(url);
+
+            return executeCall(call);
+        });
+    }
+
+    private static CompletableFuture<Downloadable> createUrlToTwitterModelTask(final Context context, String url) {
+        return CompletableFuture.supplyAsync(() -> {
+            Long statusId = ServiceIdentifier.parseTwitterStatusId(url);
+            Call<Tweet> call = TwitterApi.loadTweet(context, statusId);
+
+            return TwitterVideo.from(executeCall(call));
+        });
+    }
+
+    private static <T> T executeCall(Call<T> call) {
+        try {
+            Response<T> response = call.execute();
+            if (!response.isSuccessful()) {
+                return null;
+            }
+
+            return response.body();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return null;
     }
 }
