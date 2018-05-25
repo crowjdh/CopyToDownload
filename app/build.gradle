@@ -1,5 +1,24 @@
 apply plugin: 'com.android.application'
 
+def getLocalProperties() {
+    Properties properties = new Properties()
+    properties.load(project.rootProject.file('local.properties').newDataInputStream())
+    return properties
+}
+
+def getLocalProperty(key) {
+    Properties properties = getLocalProperties()
+    return properties.getProperty(key)
+}
+
+def getTwitterKey() {
+    return getLocalProperty("twitter.key")
+}
+
+def getTwitterSecret() {
+    return getLocalProperty("twitter.secret")
+}
+
 android {
     compileSdkVersion 27
     defaultConfig {
@@ -9,6 +28,9 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+
+        buildConfigField "String", "TWITTER_KEY", "\"" + getTwitterKey() + "\""
+        buildConfigField "String", "TWITTER_SECRET", "\"" + getTwitterSecret() + "\""
     }
     buildTypes {
         release {
