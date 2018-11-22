@@ -2,9 +2,13 @@ package com.ques.copytodownload.model;
 
 import android.accounts.NetworkErrorException;
 import android.content.Context;
+import android.support.annotation.Nullable;
 
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 import com.ques.copytodownload.model.apis.InstagramApi;
 import com.ques.copytodownload.model.apis.TwitterApi;
+import com.ques.copytodownload.model.retrofit.InstagramDeserializer;
 import com.ques.copytodownload.utils.DownloadUtils;
 import com.ques.copytodownload.utils.Logger;
 import com.ques.copytodownload.utils.ServiceIdentifier;
@@ -29,9 +33,12 @@ public class ClipboardURLHandler {
     private static final InstagramApi INSTAGRAM_API;
 
     static {
+        Gson gson = new GsonBuilder()
+                .registerTypeAdapter(InstagramMedia.class, new InstagramDeserializer())
+                .create();
         Retrofit retrofit = new Retrofit.Builder()
                 .baseUrl("https://api.instagram.com/")
-                .addConverterFactory(GsonConverterFactory.create())
+                .addConverterFactory(GsonConverterFactory.create(gson))
                 .build();
         INSTAGRAM_API = retrofit.create(InstagramApi.class);
     }
@@ -48,10 +55,15 @@ public class ClipboardURLHandler {
         }
 
         CompletableFuture<Downloadable> task = buildCreateUrlTask(context, url, type);
+        if (task == null) {
+            Logger.dOrLongToast(context, "Failed to parse url: " + url);
+            return;
+        }
         task = applyFailureHandler(context, task);
         applyRequestDownload(context, task);
     }
 
+    @Nullable
     private static CompletableFuture<Downloadable> buildCreateUrlTask(Context context, String url, ApiType type) {
         CompletableFuture<Downloadable> task = null;
 
@@ -88,9 +100,16 @@ public class ClipboardURLHandler {
         });
     }
 
+    @Nullable
     private static CompletableFuture<Downloadable> createUrlToInstagramModelTask(String url) {
         return CompletableFuture.supplyAsync(() -> {
-            Call<OEmbed> call = INSTAGRAM_API.loadOEmbed(url);
+            String id = ServiceIdentifier.parseInstagramPostId(url);
+
+            if (id == null) {
+                return null;
+            }
+
+            Call<InstagramMedia> call = INSTAGRAM_API.loadMedia(id);
 
             return executeCall(call);
         });

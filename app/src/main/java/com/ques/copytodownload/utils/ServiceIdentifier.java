@@ -61,4 +61,12 @@ public class ServiceIdentifier {
         String statusIdString = m.group(3);
         return Long.valueOf(statusIdString);
     }
+
+    @Nullable
+    public static String parseInstagramPostId(String url) {
+        Pattern pattern = Pattern.compile("instagram.com/p/([\\w\\d]+)[/]*");
+        Matcher matcher = pattern.matcher(url);
+
+        return matcher.find() ? matcher.group(1) : null;
+    }
 }

@@ -30,9 +30,27 @@ public class DownloadUtils {
             throw new NetworkErrorException(message);
         }
 
-        File outFile = makeOutputFile(downloadable);
-        DownloadManager.Request request = buildDownloadRequest(downloadable, outFile);
+        enqueueDownload(downloadable, downloadmanager);
+        enqueueAdditionalDownloads(downloadable, downloadmanager);
+    }
+
+    private static void enqueueDownload(Downloadable downloadable, DownloadManager downloadmanager) {
+        DownloadManager.Request request = buildDownloadRequest(downloadable);
         downloadmanager.enqueue(request);
+    }
+
+    private static void enqueueAdditionalDownloads(Downloadable downloadable, DownloadManager downloadmanager) {
+        if (downloadable.hasAdditionalDownloadables()) {
+            for (Downloadable additionalDownloadable : downloadable.getAdditionalDownloadables()) {
+                enqueueDownload(additionalDownloadable, downloadmanager);
+            }
+        }
+    }
+
+    @NonNull
+    private static DownloadManager.Request buildDownloadRequest(Downloadable downloadable) {
+        File outFile = makeOutputFile(downloadable);
+        return buildDownloadRequest(downloadable, outFile);
     }
 
     @NonNull
