@@ -64,7 +64,8 @@ public class ServiceIdentifier {
 
     @Nullable
     public static String parseInstagramPostId(String url) {
-        Pattern pattern = Pattern.compile("instagram.com/p/([\\w\\d]+)[/]*");
+        Pattern pattern = Pattern.compile("instagram.com/.*/([\\w\\d-]+)[/]*");
+
         Matcher matcher = pattern.matcher(url);
 
         return matcher.find() ? matcher.group(1) : null;

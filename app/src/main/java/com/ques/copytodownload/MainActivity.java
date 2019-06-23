@@ -7,19 +7,36 @@ import android.support.annotation.NonNull;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.widget.ToggleButton;
 
 import com.ques.copytodownload.services.ClipboardMonitorService;
 import com.ques.copytodownload.utils.Logger;
+import com.ques.copytodownload.utils.PrefsUtil;
 
 public class MainActivity extends AppCompatActivity {
 
     private static final int RC_PERMISSIONS_WRITE_EXTERNAL_STORAGE = 1000;
     private static final String PERMISSION_WRITE = Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
+    private ToggleButton mPowerSwitch;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        initViews();
+    }
+
+    private void initViews() {
+        mPowerSwitch = findViewById(R.id.power_toggle);
+        mPowerSwitch.setChecked(PrefsUtil.isPoweredOn(getApplicationContext()));
+        Log.i("asdf", String.format("%b", PrefsUtil.isPoweredOn(getApplicationContext())));
+        mPowerSwitch.setOnCheckedChangeListener((compoundButton, isChecked) -> {
+                PrefsUtil.updatePowerSwitch(getApplicationContext(), isChecked);
+                Log.i("asdf", String.format("%b", PrefsUtil.isPoweredOn(getApplicationContext())));
+        });
     }
 
     @Override

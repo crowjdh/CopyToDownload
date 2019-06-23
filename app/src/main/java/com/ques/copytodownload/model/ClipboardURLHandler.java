@@ -50,7 +50,7 @@ public class ClipboardURLHandler {
     public static void tryToDownloadMedia(Context context, String url) {
         ApiType type = ServiceIdentifier.getApiType(url);
         if (type == null) {
-            Logger.dOrLongToast(context, "No matching api. Skipping download.");
+            Logger.i("No matching api. Skipping download.");
             return;
         }
 

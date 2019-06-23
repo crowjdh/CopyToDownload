@@ -10,6 +10,7 @@ import android.support.annotation.Nullable;
 
 import com.ques.copytodownload.model.ClipboardURLHandler;
 import com.ques.copytodownload.utils.Logger;
+import com.ques.copytodownload.utils.PrefsUtil;
 
 public class ClipboardMonitorService extends Service
         implements ClipboardManager.OnPrimaryClipChangedListener {
@@ -41,6 +42,11 @@ public class ClipboardMonitorService extends Service
     @Override
     public void onPrimaryClipChanged() {
         Logger.d("onPrimaryClipChanged:\n" + mClipboardManager.getPrimaryClip());
+
+        boolean isTurnedOn = PrefsUtil.isPoweredOn(getApplicationContext());
+        if (!isTurnedOn) {
+            return;
+        }
 
         String copiedText = mClipboardManager.getPrimaryClip().getItemAt(0).getText().toString();
         ClipboardURLHandler.tryToDownloadMedia(getApplicationContext(), copiedText);
